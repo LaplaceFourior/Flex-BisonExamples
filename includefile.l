@@ -16,7 +16,7 @@ char *curfilename;
 
 int newfile(char* fn);
 int popfile(void);
-
+int mylineno = 1;
 %}
 
 %%
@@ -27,7 +27,7 @@ int popfile(void);
                                         while( (c = input()) && c != '\n');
                                     }
                                     
-                                    yylineno++;
+                                    mylineno++;
                                     
                                     if( !newfile(yytext) ) {
                                         yyterminate();
@@ -36,7 +36,7 @@ int popfile(void);
                                     BEGIN INITIAL;
                                 } 
 <IFILE>.|\n                     {
-                                    fprintf(stderr, "%4d bad include line\n", yylineno);
+                                    fprintf(stderr, "%4d bad include line\n", mylineno);
                                     yyterminate();
                                 }
 <<EOF>>                         {
@@ -46,14 +46,14 @@ int popfile(void);
                                 }
 
 ^.                              {
-                                    fprintf(yyout, "%4d %s", yylineno, yytext);
+                                    fprintf(yyout, "%4d %s", mylineno, yytext);
                                 }
 ^\n                             {
-                                    fprintf(yyout, "%4d %s", yylineno++, yytext);
+                                    fprintf(yyout, "%4d %s", mylineno++, yytext);
                                 }
 \n                              {
                                     ECHO;
-                                    yylineno++;
+                                    mylineno++;
                                 }
 .                               {
                                     ECHO;
@@ -84,7 +84,7 @@ int newfile(char* fn)
     if( !bs ) { perror("malloc"); exit(1); }
 
     if( curbs ){
-        curbs->lineno = yylineno;
+        curbs->lineno = mylineno;
     }
     bs->prev = curbs;
 
@@ -93,7 +93,7 @@ int newfile(char* fn)
     bs->filename = fn;
     yy_switch_to_buffer(bs->bs);
     curbs = bs;
-    yylineno = 1;
+    mylineno = 1;
     curfilename = fn;
     return 1;
 }
@@ -115,7 +115,7 @@ int popfile(void)
 
     yy_switch_to_buffer(prevbs->bs);
     curbs = prevbs;
-    yylineno = curbs->lineno;
+    mylineno = curbs->lineno;
     curfilename = curbs->filename;
     return 1;
 }

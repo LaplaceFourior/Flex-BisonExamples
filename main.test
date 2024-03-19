@@ -1,0 +1,5 @@
+I create a file named main.test, 
+and include a file named main1.test
+#include </home/laplace/projects/studyflexbison/main1.test>
+Now I include the file main1.test;
+I can do something now
