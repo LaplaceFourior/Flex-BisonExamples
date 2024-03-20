@@ -1,5 +1,12 @@
-I create a file named main.test, 
-and include a file named main1.test
-#include </home/laplace/projects/studyflexbison/main1.test>
-Now I include the file main1.test;
-I can do something now
+int main()
+{
+    int a = 0;
+    int b = 1;
+    int c = a + b;
+    char c = "a";
+    if(a == 0) {
+        return 5;
+    } else {
+        return 4;
+    }
+}
