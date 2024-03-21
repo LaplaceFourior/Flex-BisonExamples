@@ -1,6 +1,6 @@
 %option noyywrap nodefault yylineno
 %{
-# include "calculate.h"
+# include "calculateTool.h"
 # include "calculate.tab.h"
 %}
 
@@ -18,5 +18,6 @@ EXP ([Ee][-+]?[0-9]+)
 "//".*\n
 \n      { return EOL;}
 [ \t]   { }
+quit    { return EOF; }
 .       { yyerror("Mystery character %c\n", *yytext);}
 %%
