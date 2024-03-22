@@ -34,7 +34,7 @@ int fn;
 stmt: IF exp THEN list { $$ = newflow('I', $2, $4, NULL); }
     | IF exp THEN list ELSE list { $$ = newflow('I', $2, $4, $6); }
     | WHILE exp DO list { $$ = newflow('W', $2, $4, NULL);}
-    | exp
+    | exp               { $$ = $1; }
     ;
 
 list:               { $$ = NULL; }
@@ -70,9 +70,8 @@ symlist: NAME               { $$ = newsymlist($1, NULL); }
 
 calclist:
     | calclist stmt EOL {
-        printf("= %4.4g\n", eval($2));
+        printf("= %4.4g\n>", eval($2));
         treefree($2);
-        printf("> ");
     }
     | calclist LET NAME '(' symlist ')' '=' list EOL {
         dodef($3, $5, $8);

@@ -22,7 +22,7 @@ struct symbol* lookup(char* sym)
     int scount = NHASH;
 
     while(--scount >= 0) {
-        if( sp->name && strcmp(sp->name, sym)) {
+        if( sp->name && !strcmp(sp->name, sym)) {
             return sp;
         }
         if(!sp->name) {
@@ -88,7 +88,7 @@ struct ast* newfunc(int functype, struct ast* l)
         yyerror("out of space");
         exit(0);
     }
-    a->nodetype = "F";
+    a->nodetype = 'F';
     a->l = l;
     a->functype = functype;
     return (struct ast*)a;
@@ -101,7 +101,7 @@ struct ast* newcall(struct symbol* s, struct ast* l)
         yyerror("out of space");
         exit(0);
     }
-    a->nodetype = "C";
+    a->nodetype = 'C';
     a->l = l;
     a->s = s;
     return (struct ast*)a;
@@ -115,7 +115,7 @@ struct ast* newref(struct symbol* s)
         yyerror("out of space");
         exit(0);
     }
-    a->nodetype = "N";
+    a->nodetype = 'N';
     a->s = s;
     return (struct ast*)a;
 }
@@ -127,7 +127,7 @@ struct ast* newasgn(struct symbol* s, struct ast* v)
         yyerror("out of space");
         exit(0);
     }
-    a->nodetype = "=";
+    a->nodetype = '=';
     a->s = s;
     a->v = v;
     return (struct ast*)a;
