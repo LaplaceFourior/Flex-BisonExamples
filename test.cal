@@ -1,4 +1,0 @@
-a = 1
-b = 2
-let add(c, d) = c + d;
-add(a , b)

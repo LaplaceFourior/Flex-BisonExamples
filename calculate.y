@@ -1,88 +1,47 @@
 %{
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include "calculateTool.h"
 %}
 
 %union {
-struct ast *a;
-double d;
-struct symbol* s;
-struct symlist* sl;
-int fn; 
+char* s;
 }
+%token MATH_START MATH_END  CONTENT_START CONTENT_END FRAC_START FRAC_END 
+%token SQRT_START SQRT_END ROW_START ROW_END POWER_START POWER_END
+%token <s> CONTENT
 
-%token <d> NUMBER
-%token <s> NAME
-%token <fn> FUNC
-%token EOL
+%type <s> elements
 
-%token IF THEN ELSE WHILE DO LET
-
-%nonassoc <fn> CMP
-%right '='
-%left '+' '-'
-%left '*' '/'
-%nonassoc UMINUS
-
-%type <a> exp stmt list explist
-%type <sl> symlist
-
-%start calclist
 %%
-
-stmt: IF exp THEN list { $$ = newflow('I', $2, $4, NULL); }
-    | IF exp THEN list ELSE list { $$ = newflow('I', $2, $4, $6); }
-    | WHILE exp DO list { $$ = newflow('W', $2, $4, NULL);}
-    | exp               { $$ = $1; }
+mathml:
+    MATH_START elements MATH_END        { printf("%s\n", $2); }
+    ;
+elements:
+    CONTENT_START CONTENT CONTENT_END           { 
+                                                    $$ = malloc(1024); // 分配内存
+                                                    sprintf($$, "%s", $2); 
+                                                }
+    | FRAC_START elements elements FRAC_END     { 
+                                                    $$ = malloc(1024); // 分配内存
+                                                    sprintf($$, "(%s/%s)", $2, $3);
+                                                }
+    | SQRT_START elements elements SQRT_END     {   
+                                                    $$ = malloc(1024); // 分配内存
+                                                    sprintf($$, "sqrt(%s, %s)", $2, $3);
+                                                }
+    | POWER_START elements elements POWER_END   {
+                                                    $$ = malloc(1024); // 分配内存
+                                                    sprintf($$, "pow(%s, %s)", $2, $3);
+                                                }
+    | ROW_START elements ROW_END                {
+                                                    $$ = $2; // 假设$2已经是动态分配的字符串
+                                                }
+    | elements elements                         {
+                                                    $$ = malloc(2048); // 分配更大的内存以容纳两个字符串
+                                                    sprintf($$, "%s%s", $1, $2);
+                                                }
     ;
 
-list:               { $$ = NULL; }
-    | stmt ';' list {
-                        if ( $3 == NULL ) {
-                            $$ = $1;
-                        } else {
-                            $$ = newast('L', $1, $3);
-                        }
-                    }
-    ;
-exp:  exp CMP exp           { $$ = newcmp($2, $1, $3);}
-    | exp '+' exp           { $$ = newast('+', $1, $3);}
-    | exp '-' exp           { $$ = newast('-', $1, $3);}
-    | exp '*' exp           { $$ = newast('*',$1, $3);}
-    | exp '/' exp           { $$ = newast('/',$1, $3);}
-    | '(' exp ')'           { $$ = $2; }
-    | '-' exp %prec UMINUS  { $$ = newast('M', $2, NULL); }
-    | NUMBER                { $$ = newnum($1);} 
-    | NAME                  { $$ = newref($1); }
-    | NAME '=' exp          { $$ = newasgn($1, $3); }
-    | FUNC '(' explist ')'  { $$ = newfunc($1, $3); }
-    | NAME '(' explist ')'  { $$ = newcall($1, $3); }
-    ;
-
-explist: exp    
-    | exp ',' explist       { $$ = newast('L', $1, $3); }
-    ;
-
-symlist: NAME               { $$ = newsymlist($1, NULL); }
-    | NAME ',' symlist      { $$ = newsymlist($1, $3); }
-    ;
-
-calclist:
-    | calclist stmt EOL {
-        printf("= %4.4g\n>", eval($2));
-        treefree($2);
-    }
-    | calclist LET NAME '(' symlist ')' '=' list EOL {
-        dodef($3, $5, $8);
-        printf("Defined %s\n> ", $3->name);
-    }
-    | calclist error EOL {
-        yyerrok;
-        printf("> ");
-    }
-    | calclist EOL {
-        printf("> ");
-    }
-    ;
 %%
