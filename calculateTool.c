@@ -5,6 +5,7 @@
 #include <math.h>
 #include "calculateTool.h"
 
+extern FILE* yyin;
 // hash a char
 static unsigned symhash(char* sym)
 {
@@ -384,9 +385,33 @@ void yyerror(char* s, ...)
     fprintf(stderr, "\n");
 }
 
-int main()
+
+// // command line interaction 
+// int main()
+// {
+//     printf("> ");
+//     yyparse();
+//     return 0;
+// }
+
+// read file
+int main(int argc, char** argv)
 {
-    printf("> ");
-    yyparse();
+    if( argc > 1 ) {
+        yyin = fopen(argv[1], "r");
+        if( !yyin ) {
+            perror(argv[1]);
+            return 1;
+        }
+
+        yyparse();
+        fclose(yyin);
+    } else {
+        printf("> ");
+        yyparse();
+    }
+
     return 0;
 }
+
+
