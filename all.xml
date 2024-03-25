@@ -43,7 +43,7 @@
         <mml:mrow>
             <mml:mi mathvariant="normal">sin</mml:mi>
         </mml:mrow>
-        <mml:mo>⁡</mml:mo>
+        <mml:mo>sin</mml:mo>
         <mml:mrow>
             <mml:mi>a</mml:mi>
         </mml:mrow>
@@ -60,7 +60,7 @@
                 <mml:mrow>
                     <mml:mi mathvariant="normal">sin</mml:mi>
                 </mml:mrow>
-                <mml:mo>⁡</mml:mo>
+                <mml:mo>sin</mml:mo>
                 <mml:mrow>
                     <mml:mi>a</mml:mi>
                 </mml:mrow>
@@ -80,7 +80,7 @@
                 <mml:mrow>
                     <mml:mo>-</mml:mo>
                     <mml:mi>i</mml:mi>
-                    <mml:mi>ω</mml:mi>
+                    <mml:mi>w</mml:mi>
                     <mml:mi>t</mml:mi>
                 </mml:mrow>
             </mml:msup>

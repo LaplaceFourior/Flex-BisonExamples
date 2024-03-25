@@ -2,6 +2,7 @@
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "calculateTool.h"
 %}
 
@@ -25,37 +26,53 @@ mathml:
     ;
 elements:
     CONTENT_START CONTENT CONTENT_END           { 
-                                                    $$ = malloc(1024); 
-                                                    sprintf($$, "%s", $2); 
+                                                    $$ = malloc(strlen($2) + 1);
+                                                    strcpy($$, $2); 
                                                 }
-    | CONTENT_START CONTENT_END                   { 
+    | CONTENT_START CONTENT_END                 { 
                                                      
                                                 }
     | FRAC_START elements elements FRAC_END     { 
-                                                    $$ = malloc(1024); 
+                                                    int len = strlen($2) + strlen($3) + 4;
+                                                    $$ = malloc(len); 
                                                     sprintf($$, "(%s/%s)", $2, $3);
+                                                    free($2);
+                                                    free($3);
                                                 }
     | SQRT_START elements elements SQRT_END     {   
-                                                    $$ = malloc(1024); 
+                                                    int len = strlen($2) + strlen($3) + 9;
+                                                    $$ = malloc(len); 
                                                     sprintf($$, "sqrt(%s, %s)", $2, $3);
+                                                    free($2);
+                                                    free($3);
                                                 }
     | POWER_START elements elements POWER_END   {
-                                                    $$ = malloc(1024); 
+                                                    int len = strlen($2) + strlen($3) + 8;
+                                                    $$ = malloc(len); 
                                                     sprintf($$, "pow(%s, %s)", $2, $3);
+                                                    free($2);
+                                                    free($3);
                                                 }
     | SUBPOWER_START elements elements elements SUBPOWER_END    {
-                                                                    $$ = malloc(1024); 
+                                                                    int len = strlen($3) + strlen($4) + 8;
+                                                                    $$ = malloc(len); 
                                                                     sprintf($$, "pow(%s, %s)", $3, $4);
+                                                                    free($3);
+                                                                    free($4);
                                                                 }
     | ROW_START elements ROW_END                {
-                                                    $$ = $2; 
+                                                    $$ = malloc(strlen($2) + 1);
+                                                    strcpy($$, $2);
                                                 }
     | ROW_START ROW_END                         {
 
                                                 }
     | elements elements                         {
-                                                    $$ = malloc(2048); 
+                                                    int len = strlen($1) + strlen($2) + 1;
+                                                    $$ = malloc(len); 
                                                     sprintf($$, "%s%s", $1, $2);
+                                                    free($1);
+                                                    free($2);
                                                 }
     ;
 
